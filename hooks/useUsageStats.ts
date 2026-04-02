@@ -20,7 +20,11 @@ export function useUsageStats(days: number = 7): UseUsageStatsResult {
       setError(null);
 
       try {
-        const res = await fetch(`/api/usage/stats?days=${days}`);
+        // NOTE: In production this header would be set by the auth layer.
+        // For demo purposes we hardcode user 1.
+        const res = await fetch(`/api/usage/stats?days=${days}`, {
+          headers: { "x-user-id": "1" },
+        });
         const json = await res.json();
 
         if (cancelled) return;

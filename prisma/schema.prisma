@@ -1,13 +1,46 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Provided models (do not modify) ──────────────────────────────────────────
+
+model users {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String?
+  plan_tier  String   @default("starter") @db.VarChar(16)
+  created_at DateTime @default(now())
+}
+
+model daily_usage_events {
+  id           Int       @id @default(autoincrement())
+  user_id      Int
+  date_key     String    @db.VarChar(10) // "YYYY-MM-DD"
+  request_id   String    @db.VarChar(64)
+  status       String    @db.VarChar(16) // "reserved" | "committed"
+  reserved_at  DateTime  @default(now())
+  committed_at DateTime?
+  created_at   DateTime  @default(now())
+}
+
+// ── Cache model (new) ─────────────────────────────────────────────────────────
+
+/// Pre-computed daily aggregates per user.
+/// Past days (before today) are immutable once committed — cached permanently.
+/// Today's entry has a short TTL (see CACHE_TTL_MINUTES in lib/constants.ts).
+model daily_usage_cache {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  date_key    String   @db.VarChar(10) // "YYYY-MM-DD"
+  committed   Int      @default(0)
+  reserved    Int      @default(0) // non-stale reserved only
+  computed_at DateTime @default(now())
+
+  @@unique([user_id, date_key])
+  @@index([user_id, date_key])
 }

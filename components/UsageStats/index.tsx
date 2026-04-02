@@ -19,7 +19,15 @@ export function UsageStats() {
   return (
     <section className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Usage Analytics</h2>
+        <div className={styles.titleGroup}>
+          <span className={styles.eyebrow}>Dashboard</span>
+          <h1 className={styles.title}>Usage Analytics</h1>
+          {data && (
+            <span className={styles.planBadge}>
+              {data.plan} · {data.daily_limit} turns / day
+            </span>
+          )}
+        </div>
         <div className={styles.dayToggle}>
           {DAY_OPTIONS.map((d) => (
             <button
@@ -34,29 +42,22 @@ export function UsageStats() {
       </div>
 
       {loading && (
-        <div className={styles.state}>
-          <div className={styles.skeleton} />
-          <div className={styles.skeleton} style={{ width: "60%" }} />
+        <div className={styles.stateContainer}>
+          <div className={styles.skeletonBlock} />
+          <div className={styles.skeletonRow} style={{ width: "55%" }} />
+          <div className={styles.skeletonRow} style={{ width: "75%" }} />
         </div>
       )}
 
       {error && !loading && (
-        <div className={styles.error} role="alert">
-          {error}
-        </div>
+        <div className={styles.error} role="alert">{error}</div>
       )}
 
       {data && !loading && (
         <>
-          <div className={styles.planBadge}>
-            {data.plan} · {data.daily_limit} turns/day
-          </div>
-
-          {today && <TodayProgress today={today} />}
-
-          <UsageChart days={data.days} dailyLimit={data.daily_limit} />
-
           <SummaryCards summary={data.summary} />
+          {today && <TodayProgress today={today} />}
+          <UsageChart days={data.days} dailyLimit={data.daily_limit} />
         </>
       )}
     </section>

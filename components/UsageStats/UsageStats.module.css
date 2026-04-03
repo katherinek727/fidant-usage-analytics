@@ -313,11 +313,13 @@
 
 /* ── Chart ──────────────────────────────────────────── */
 .chartSection {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 22px;
-  padding: 26px 30px;
+  padding: 26px 28px 20px;
   margin-bottom: 14px;
+  overflow: hidden;
   box-shadow:
     0 2px 4px rgba(180,100,100,0.05),
     0 6px 20px rgba(180,100,100,0.06),
@@ -328,7 +330,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .chartLabel {
